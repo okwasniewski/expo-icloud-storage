@@ -1,0 +1,8 @@
+# Exclude everything except the build output
+/*
+!/build
+!/src
+!/ios
+!/expo-module.config.json
+!/package.json
+!/README.md

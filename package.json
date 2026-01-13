@@ -1,0 +1,48 @@
+{
+  "name": "expo-icloud-storage",
+  "version": "0.1.0",
+  "description": "Expo module for iCloud's NSUbiquitousKeyValueStore - key-value storage that syncs across Apple devices",
+  "main": "build/index.js",
+  "types": "build/index.d.ts",
+  "scripts": {
+    "build": "expo-module build",
+    "clean": "expo-module clean",
+    "lint": "expo-module lint",
+    "prepare": "expo-module prepare",
+    "prepublishOnly": "expo-module prepublishOnly",
+    "expo-module": "expo-module",
+    "open:ios": "xed example/ios",
+    "open:android": "open -a \"Android Studio\" example/android"
+  },
+  "keywords": [
+    "react-native",
+    "expo",
+    "icloud",
+    "icloud-storage",
+    "NSUbiquitousKeyValueStore",
+    "key-value-store",
+    "sync"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/okwasniewski/expo-icloud-storage.git"
+  },
+  "bugs": {
+    "url": "https://github.com/okwasniewski/expo-icloud-storage/issues"
+  },
+  "author": "Oskar Kwaśniewski <oskarkwasniewski@icloud.com> (https://github.com/okwasniewski)",
+  "license": "MIT",
+  "homepage": "https://github.com/okwasniewski/expo-icloud-storage#readme",
+  "dependencies": {},
+  "devDependencies": {
+    "@types/react": "~18.2.79",
+    "expo-module-scripts": "^4.0.4",
+    "expo": "^52.0.0",
+    "react-native": "0.76.6"
+  },
+  "peerDependencies": {
+    "expo": "*",
+    "react": "*",
+    "react-native": "*"
+  }
+}
