@@ -1,6 +1,10 @@
 {
   "extends": "expo/tsconfig.base",
   "compilerOptions": {
-    "strict": true
+    "strict": true,
+    "paths": {
+      "expo-icloud-storage": ["../src/index"],
+      "expo-icloud-storage/*": ["../src/*"]
+    }
   }
 }

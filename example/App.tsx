@@ -179,7 +179,9 @@ const styles = StyleSheet.create({
     marginHorizontal: 5,
   },
   fullWidth: {
+    flex: 0,
     marginHorizontal: 5,
+    width: '100%',
   },
   buttonText: {
     color: '#fff',
