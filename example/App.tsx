@@ -1,6 +1,6 @@
 import { StatusBar } from 'expo-status-bar';
 import iCloudStorage from 'expo-icloud-storage';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import {
   StyleSheet,
   Text,
@@ -17,6 +17,7 @@ export default function App() {
   const [value, setValue] = useState('');
   const [result, setResult] = useState<string | null>(null);
   const [allKeys, setAllKeys] = useState<string[]>([]);
+  const [changeEvents, setChangeEvents] = useState<string[]>([]);
 
   const handleSet = () => {
     if (!key || !value) {
@@ -50,6 +51,17 @@ export default function App() {
     setAllKeys(keys);
     setResult(`Found ${keys.length} keys`);
   };
+
+  useEffect(() => {
+    const subscription = iCloudStorage.addChangeListener((event) => {
+      const timestamp = new Date().toLocaleTimeString();
+      const eventStr = `${timestamp}: ${event.reason} - ${event.changedKeys.join(', ')}`;
+      setChangeEvents((prev) => [eventStr, ...prev].slice(0, 10));
+      setResult(`Change detected: ${event.reason}`);
+    });
+
+    return () => subscription.remove();
+  }, []);
 
   if (Platform.OS !== 'ios' && Platform.OS !== 'macos') {
     return (
@@ -116,6 +128,17 @@ export default function App() {
           {allKeys.map((k, index) => (
             <Text key={index} style={styles.keyItem}>
               • {k}
+            </Text>
+          ))}
+        </View>
+      )}
+
+      {changeEvents.length > 0 && (
+        <View style={styles.eventsContainer}>
+          <Text style={styles.eventsTitle}>📡 Change Listener Events:</Text>
+          {changeEvents.map((event, index) => (
+            <Text key={index} style={styles.eventItem}>
+              {event}
             </Text>
           ))}
         </View>
@@ -220,5 +243,26 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: '#666',
     marginBottom: 5,
+  },
+  eventsContainer: {
+    marginTop: 20,
+    padding: 15,
+    backgroundColor: '#e3f2fd',
+    borderRadius: 8,
+    width: '100%',
+    borderWidth: 1,
+    borderColor: '#2196F3',
+  },
+  eventsTitle: {
+    fontSize: 16,
+    fontWeight: '600',
+    marginBottom: 10,
+    color: '#1976D2',
+  },
+  eventItem: {
+    fontSize: 12,
+    color: '#555',
+    marginBottom: 4,
+    fontFamily: 'monospace',
   },
 });
