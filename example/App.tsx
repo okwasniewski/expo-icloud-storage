@@ -20,47 +20,75 @@ export default function App() {
   const [changeEvents, setChangeEvents] = useState<string[]>([]);
 
   const handleSet = () => {
+    console.log('expo-icloud-storage-example: handleSet', { key, value });
     if (!key || !value) {
+      console.warn('expo-icloud-storage-example: handleSet failed', {
+        reason: 'missing key or value',
+      });
       Alert.alert('Error', 'Please enter both key and value');
       return;
     }
     iCloudStorage.set(key, value);
     setResult(`Saved: ${key} = ${value}`);
+    console.log('expo-icloud-storage-example: set complete', {
+      key,
+      value,
+    });
   };
 
   const handleGet = () => {
+    console.log('expo-icloud-storage-example: handleGet', { key });
     if (!key) {
+      console.warn('expo-icloud-storage-example: handleGet failed', {
+        reason: 'missing key',
+      });
       Alert.alert('Error', 'Please enter a key');
       return;
     }
     const stored = iCloudStorage.getString(key);
     setResult(stored ? `Value: ${stored}` : 'Key not found');
+    console.log('expo-icloud-storage-example: get result', {
+      key,
+      found: Boolean(stored),
+      value: stored,
+    });
   };
 
   const handleRemove = () => {
+    console.log('expo-icloud-storage-example: handleRemove', { key });
     if (!key) {
+      console.warn('expo-icloud-storage-example: handleRemove failed', {
+        reason: 'missing key',
+      });
       Alert.alert('Error', 'Please enter a key');
       return;
     }
     iCloudStorage.remove(key);
     setResult(`Removed: ${key}`);
+    console.log('expo-icloud-storage-example: remove complete', { key });
   };
 
   const handleGetAllKeys = () => {
     const keys = iCloudStorage.getAllKeys();
     setAllKeys(keys);
     setResult(`Found ${keys.length} keys`);
+    console.log('expo-icloud-storage-example: getAllKeys result', { count: keys.length });
   };
 
   useEffect(() => {
+    console.log('expo-icloud-storage-example: mounting', { platform: Platform.OS });
     const subscription = iCloudStorage.addChangeListener((event) => {
       const timestamp = new Date().toLocaleTimeString();
       const eventStr = `${timestamp}: ${event.reason} - ${event.changedKeys.join(', ')}`;
       setChangeEvents((prev) => [eventStr, ...prev].slice(0, 10));
       setResult(`Change detected: ${event.reason}`);
+      console.log('expo-icloud-storage-example: change event', event);
     });
 
-    return () => subscription.remove();
+    return () => {
+      console.log('expo-icloud-storage-example: unmount cleanup');
+      subscription.remove();
+    };
   }, []);
 
   if (Platform.OS !== 'ios' && Platform.OS !== 'macos') {

@@ -1,11 +1,12 @@
-import { NativeModule, requireNativeModule } from 'expo';
+import { NativeModule, requireNativeModule } from "expo";
 
-export type ICloudStorageChangeReason = 
-  | 'server'
-  | 'initialSync'
-  | 'quotaViolation'
-  | 'accountChange'
-  | 'unknown';
+export type ICloudStorageChangeReason =
+  | "local"
+  | "server"
+  | "initialSync"
+  | "quotaViolation"
+  | "accountChange"
+  | "unknown";
 
 export type ICloudStorageChangeEvent = {
   changedKeys: string[];
@@ -19,4 +20,6 @@ declare class ExpoAppleCloudStorageModule extends NativeModule {
   getAllKeys(): string[];
 }
 
-export default requireNativeModule<ExpoAppleCloudStorageModule>('ExpoAppleCloudStorage');
+export default requireNativeModule<ExpoAppleCloudStorageModule>(
+  "ExpoAppleCloudStorage",
+);

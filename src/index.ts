@@ -1,8 +1,9 @@
-import { EventEmitter, EventSubscription } from 'expo-modules-core';
+import { EventEmitter, EventSubscription } from "expo-modules-core";
+
 import ExpoAppleCloudStorageModule, {
   ICloudStorageChangeEvent,
   ICloudStorageChangeReason,
-} from './ExpoAppleCloudStorageModule';
+} from "./ExpoAppleCloudStorageModule";
 
 type EventsMap = {
   onICloudStorageChange: (event: ICloudStorageChangeEvent) => void;
@@ -27,9 +28,9 @@ export function getAllKeys(): string[] {
 }
 
 export function addChangeListener(
-  listener: (event: ICloudStorageChangeEvent) => void
+  listener: (event: ICloudStorageChangeEvent) => void,
 ): EventSubscription {
-  return emitter.addListener('onICloudStorageChange', listener);
+  return emitter.addListener("onICloudStorageChange", listener);
 }
 
 export type { ICloudStorageChangeEvent, ICloudStorageChangeReason };

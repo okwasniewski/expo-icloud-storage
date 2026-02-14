@@ -23,6 +23,7 @@ public class ExpoAppleCloudStorageModule: Module {
     Function("set") { (key: String, value: String) in
       NSUbiquitousKeyValueStore.default.set(value, forKey: key)
       NSUbiquitousKeyValueStore.default.synchronize()
+      sendChangeEvent(keys: [key], reason: "local")
     }
 
     Function("getString") { (key: String) -> String? in
@@ -32,6 +33,7 @@ public class ExpoAppleCloudStorageModule: Module {
     Function("remove") { (key: String) in
       NSUbiquitousKeyValueStore.default.removeObject(forKey: key)
       NSUbiquitousKeyValueStore.default.synchronize()
+      sendChangeEvent(keys: [key], reason: "local")
     }
 
     Function("getAllKeys") { () -> [String] in
@@ -66,6 +68,13 @@ public class ExpoAppleCloudStorageModule: Module {
     sendEvent("onICloudStorageChange", [
       "changedKeys": changedKeys,
       "reason": changeReason
+    ])
+  }
+
+  private func sendChangeEvent(keys: [String], reason: String) {
+    sendEvent("onICloudStorageChange", [
+      "changedKeys": keys,
+      "reason": reason
     ])
   }
 }
