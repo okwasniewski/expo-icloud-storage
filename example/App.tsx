@@ -1,6 +1,6 @@
 import { StatusBar } from 'expo-status-bar';
 import iCloudStorage from 'expo-icloud-storage';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import {
   StyleSheet,
   Text,
@@ -17,39 +17,79 @@ export default function App() {
   const [value, setValue] = useState('');
   const [result, setResult] = useState<string | null>(null);
   const [allKeys, setAllKeys] = useState<string[]>([]);
+  const [changeEvents, setChangeEvents] = useState<string[]>([]);
 
   const handleSet = () => {
+    console.log('expo-icloud-storage-example: handleSet', { key, value });
     if (!key || !value) {
+      console.warn('expo-icloud-storage-example: handleSet failed', {
+        reason: 'missing key or value',
+      });
       Alert.alert('Error', 'Please enter both key and value');
       return;
     }
     iCloudStorage.set(key, value);
     setResult(`Saved: ${key} = ${value}`);
+    console.log('expo-icloud-storage-example: set complete', {
+      key,
+      value,
+    });
   };
 
   const handleGet = () => {
+    console.log('expo-icloud-storage-example: handleGet', { key });
     if (!key) {
+      console.warn('expo-icloud-storage-example: handleGet failed', {
+        reason: 'missing key',
+      });
       Alert.alert('Error', 'Please enter a key');
       return;
     }
     const stored = iCloudStorage.getString(key);
     setResult(stored ? `Value: ${stored}` : 'Key not found');
+    console.log('expo-icloud-storage-example: get result', {
+      key,
+      found: Boolean(stored),
+      value: stored,
+    });
   };
 
   const handleRemove = () => {
+    console.log('expo-icloud-storage-example: handleRemove', { key });
     if (!key) {
+      console.warn('expo-icloud-storage-example: handleRemove failed', {
+        reason: 'missing key',
+      });
       Alert.alert('Error', 'Please enter a key');
       return;
     }
     iCloudStorage.remove(key);
     setResult(`Removed: ${key}`);
+    console.log('expo-icloud-storage-example: remove complete', { key });
   };
 
   const handleGetAllKeys = () => {
     const keys = iCloudStorage.getAllKeys();
     setAllKeys(keys);
     setResult(`Found ${keys.length} keys`);
+    console.log('expo-icloud-storage-example: getAllKeys result', { count: keys.length });
   };
+
+  useEffect(() => {
+    console.log('expo-icloud-storage-example: mounting', { platform: Platform.OS });
+    const subscription = iCloudStorage.addChangeListener((event) => {
+      const timestamp = new Date().toLocaleTimeString();
+      const eventStr = `${timestamp}: ${event.reason} - ${event.changedKeys.join(', ')}`;
+      setChangeEvents((prev) => [eventStr, ...prev].slice(0, 10));
+      setResult(`Change detected: ${event.reason}`);
+      console.log('expo-icloud-storage-example: change event', event);
+    });
+
+    return () => {
+      console.log('expo-icloud-storage-example: unmount cleanup');
+      subscription.remove();
+    };
+  }, []);
 
   if (Platform.OS !== 'ios' && Platform.OS !== 'macos') {
     return (
@@ -116,6 +156,17 @@ export default function App() {
           {allKeys.map((k, index) => (
             <Text key={index} style={styles.keyItem}>
               • {k}
+            </Text>
+          ))}
+        </View>
+      )}
+
+      {changeEvents.length > 0 && (
+        <View style={styles.eventsContainer}>
+          <Text style={styles.eventsTitle}>📡 Change Listener Events:</Text>
+          {changeEvents.map((event, index) => (
+            <Text key={index} style={styles.eventItem}>
+              {event}
             </Text>
           ))}
         </View>
@@ -220,5 +271,26 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: '#666',
     marginBottom: 5,
+  },
+  eventsContainer: {
+    marginTop: 20,
+    padding: 15,
+    backgroundColor: '#e3f2fd',
+    borderRadius: 8,
+    width: '100%',
+    borderWidth: 1,
+    borderColor: '#2196F3',
+  },
+  eventsTitle: {
+    fontSize: 16,
+    fontWeight: '600',
+    marginBottom: 10,
+    color: '#1976D2',
+  },
+  eventItem: {
+    fontSize: 12,
+    color: '#555',
+    marginBottom: 4,
+    fontFamily: 'monospace',
   },
 });

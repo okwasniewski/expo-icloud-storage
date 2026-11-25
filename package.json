@@ -12,7 +12,9 @@
     "prepublishOnly": "expo-module prepublishOnly",
     "expo-module": "expo-module",
     "open:ios": "xed example/ios",
-    "open:android": "open -a \"Android Studio\" example/android"
+    "open:android": "open -a \"Android Studio\" example/android",
+    "android": "expo run:android",
+    "ios": "expo run:ios"
   },
   "keywords": [
     "react-native",
@@ -33,16 +35,21 @@
   "author": "Oskar Kwaśniewski <oskarkwasniewski@icloud.com> (https://github.com/okwasniewski)",
   "license": "MIT",
   "homepage": "https://github.com/okwasniewski/expo-icloud-storage#readme",
-  "dependencies": {},
   "devDependencies": {
     "@types/react": "~18.2.79",
-    "expo-module-scripts": "^4.0.4",
+    "eslint": "^8.57.0",
     "expo": "^52.0.0",
+    "expo-module-scripts": "^4.0.4",
     "react-native": "0.76.6"
   },
   "peerDependencies": {
     "expo": "*",
     "react": "*",
     "react-native": "*"
+  },
+  "dependencies": {
+    "expo": "~52.0.49",
+    "react": "18.3.1",
+    "react-native": "0.76.9"
   }
 }

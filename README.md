@@ -92,10 +92,44 @@ const keys = iCloudStorage.getAllKeys();
 console.log('Stored keys:', keys);
 ```
 
+### `addChangeListener(listener: (event: ICloudStorageChangeEvent) => void): Subscription`
+
+Listen for changes to iCloud storage that occur on other devices or due to account/quota changes.
+
+**Event payload:**
+- `changedKeys: string[]` - Array of keys that changed
+- `reason: ICloudStorageChangeReason` - Why the change occurred:
+  - `'server'` - Value(s) changed on the server (from another device)
+  - `'initialSync'` - Initial sync from iCloud on app launch
+  - `'quotaViolation'` - Storage quota exceeded
+  - `'accountChange'` - User changed iCloud account
+  - `'unknown'` - Reason could not be determined
+
+```typescript
+import { addChangeListener } from 'expo-icloud-storage';
+
+const subscription = addChangeListener((event) => {
+  console.log('iCloud storage changed!');
+  console.log('Changed keys:', event.changedKeys);
+  console.log('Reason:', event.reason);
+  
+  event.changedKeys.forEach(key => {
+    const newValue = iCloudStorage.getString(key);
+    console.log(`${key} updated to:`, newValue);
+  });
+});
+
+// Clean up when done
+subscription.remove();
+```
+
+**Note:** The listener is called when iCloud syncs changes from other devices, not for local changes made via `set()` or `remove()`.
+
 ## Usage Example
 
 ```typescript
-import iCloudStorage from 'expo-icloud-storage';
+import iCloudStorage, { addChangeListener } from 'expo-icloud-storage';
+import { useEffect } from 'react';
 
 // Store simple values
 iCloudStorage.set('lastSync', new Date().toISOString());
@@ -114,6 +148,28 @@ const allKeys = iCloudStorage.getAllKeys();
 
 // Remove a key
 iCloudStorage.remove('lastSync');
+
+// Listen for changes from other devices
+function MyComponent() {
+  useEffect(() => {
+    const subscription = addChangeListener((event) => {
+      console.log('Storage changed on another device!');
+      console.log('Changed keys:', event.changedKeys);
+      console.log('Reason:', event.reason);
+      
+      if (event.reason === 'server') {
+        event.changedKeys.forEach(key => {
+          const updatedValue = iCloudStorage.getString(key);
+          console.log(`${key} synced from iCloud:`, updatedValue);
+        });
+      }
+    });
+
+    return () => subscription.remove();
+  }, []);
+
+  return null;
+}
 ```
 
 ## Storage Limits
